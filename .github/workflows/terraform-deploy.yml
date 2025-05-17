@@ -1,0 +1,29 @@
+name: Terraform Deploy
+
+on:
+  push:
+    paths:
+      - 'infrastructure/**'
+
+jobs:
+  terraform:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Setup Terraform
+      uses: hashicorp/setup-terraform@v2
+      with:
+        terraform_version: 1.5.0
+
+    - name: Terraform Init
+      working-directory: ./infrastructure
+      run: terraform init
+
+    - name: Terraform Apply
+      working-directory: ./infrastructure
+      env:
+        TF_VAR_cloud_credentials: ${{ secrets.CLOUD_CREDENTIALS }}
+      run: terraform apply -auto-approve
